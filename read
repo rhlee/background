@@ -6,8 +6,7 @@ process () {
   dHeight=$(($backgroundHeight - $height))
   if [ "$dWidth" -lt 0 ] || [ "$dWidth" -lt 0 ]
   then
-    echo "error" 1>&2
-    exit 1
+    error "background file too small"
   fi
   convert \( -size "$width"x"$height" xc:black \) \
     \( "$background" \
@@ -25,15 +24,19 @@ random () {
     $(dd if=/dev/urandom count=1 2> /dev/null | cksum | cut -f1 -d" ") % $1))
 }
 
+error () {
+  echo "error: $1" 1>&2
+  exit 1
+}
+
 if [ -f background.png ]
 then
   background=background.png
 fi
 
-if [ -z "$background" ];
+if [ -z "$background" ]
 then
-  echo "error" 1>&2
-  exit 1
+  error "no background file"
 fi
 
 read backgroundWidth backgroundHeight <<<$(getImageDimensions "$background")
