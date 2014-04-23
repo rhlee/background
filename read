@@ -1,7 +1,18 @@
 #!/bin/sh
 
 process () {
-  echo $1
+  read width height <<<$(getImageDimensions "$1")
+  dWidth=$(($backgroundWidth - $width))
+  dHeight=$(($backgroundHeight - $height))
+  if [ "$dWidth" -lt 0 ] || [ "$dWidth" -lt 0 ]
+  then
+    echo "error" 1>&2
+    exit 1
+  fi
+  convert \( -size "$width"x"$height" xc:black \) \
+    \( "$background" \
+      -chop $(random $(($dWidth + 1)))x$(random $(($dHeight + 1))) \) \
+    "$1" -composite test.png
 }
 
 getImageDimensions () {
@@ -14,7 +25,7 @@ random () {
     $(dd if=/dev/urandom count=1 2> /dev/null | cksum | cut -f1 -d" ") % $1))
 }
 
-if [ -f background.png ];
+if [ -f background.png ]
 then
   background=background.png
 fi
