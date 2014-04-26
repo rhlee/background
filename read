@@ -54,14 +54,16 @@ then
   error "no background file"
 fi
 
-if [ -z "${!OPTIND}" ]
+inputFile=${!OPTIND}
+if [ -z "$inputFile" ]
 then
   error "please specify input file"
 fi
 
+rm -rf in out
 mkdir in out
 
-unzip -d in "${!OPTIND}"
+unzip -d in "$inputFile"
 
 read backgroundWidth backgroundHeight <<<$(getImageDimensions "$background")
 
@@ -86,4 +88,10 @@ then
   error "number of ouput files does not match input files"
 fi
 
+cd out
+zip -r "../$(basename "$(echo $inputFile | sed 's/\(.*\)\.\(.*\)/\1/')")_converted.zip" . 
+cd ..
+
 rm -rf in out
+#count zip
+#detect colors
