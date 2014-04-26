@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 process () {
   read width height <<<$(getImageDimensions "in/$1")
@@ -55,6 +55,11 @@ fi
 if [ -z "$background" ]
 then
   error "no background file"
+fi
+
+if [ -z "${!OPTIND}" ]
+then
+  error "please specify input file"
 fi
 
 read backgroundWidth backgroundHeight <<<$(getImageDimensions "$background")
