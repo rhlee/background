@@ -77,7 +77,9 @@ export -f level
 export -f error
 
 find in -type f | sed 's/^in\///g;s/"/\\\"/g;s/\\/\\\\\\/g' | \
-  xargs -I {} bash -c "process \"{}\""
+  xargs \
+    -P $(cat /proc/cpuinfo | grep '^processor	' | wc -l) \
+    -I {} bash -c "process \"{}\""
 
 if [ $(find in -type f | wc -l) -ne $(find out -type f | wc -l) ]
 then
