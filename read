@@ -4,7 +4,7 @@ process () {
   read width height <<<$(getImageDimensions "in/$1")
   dWidth=$(($backgroundWidth - $width))
   dHeight=$(($backgroundHeight - $height))
-  if [ "$dWidth" -lt 0 ] || [ "$dWidth" -lt 0 ]
+  if [ "$dWidth" -lt 0 ] || [ "$dHeight" -lt 0 ]
   then
     error "background file too small"
   fi
