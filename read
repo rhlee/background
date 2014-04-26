@@ -75,4 +75,7 @@ export -f error
 find in -mindepth 1 | sed 's/^in\///g;s/"/\\\"/g;s/\\/\\\\\\/g' | \
   xargs -I {} bash -c "process \"{}\""
 
-#check file count
+if [ $(find in -type f | wc -l) -ne $(find out -type f | wc -l) ]
+then
+  error "number of ouput files does not match input files"
+fi
