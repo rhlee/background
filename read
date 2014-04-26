@@ -62,7 +62,7 @@ echo $backgroundWidth
 echo $backgroundHeight
 
 #error handling?
-ls in | while read file
+find in -mindepth 1 | sed 's/^in\///g' | while read file
 do process "$file"
   
 done
