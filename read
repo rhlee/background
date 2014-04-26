@@ -61,11 +61,24 @@ read backgroundWidth backgroundHeight <<<$(getImageDimensions "$background")
 echo $backgroundWidth
 echo $backgroundHeight
 
-#error handling?
-find in -mindepth 1 | sed 's/^in\///g' | while read file
-do process "$file"
-  
-done
+export background
+export backgroundWidth
+export backgroundHeight
+export gamma
 
+export -f process
+export -f getImageDimensions
+export -f random
+export -f level
+export -f error
+
+#error handling?
+#escape
+# find in -mindepth 1 | sed 's/^in\///g' | while read file
+# do process "$file"
+  
+# done
+
+find in -mindepth 1 | sed 's/^in\///g;s/"/\\\"/g;s/\\/\\\\\\/g' | xargs -I {} bash -c "process \"{}\""
 
 #check file count
