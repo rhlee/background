@@ -11,7 +11,7 @@ process () {
   convert \( -size "$width"x"$height" xc:black \) \
     \( "$background" \
       -chop $(random $(($dWidth + 1)))x$(random $(($dHeight + 1))) \) \
-    "$1" -composite test.png
+    \( "$1" $(level) \) -composite test.png
 }
 
 getImageDimensions () {
@@ -63,5 +63,3 @@ echo $backgroundHeight
 
 #error handling?
 find in -mindepth 1 | while read file; do process "$file"; done
-
-echo $(random 10)
