@@ -33,7 +33,7 @@ level () {
 
 error () {
   echo "error: $1" 1>&2
-  exit 1
+  exit 255
 }
 
 while getopts "g:" OPTION
@@ -72,13 +72,7 @@ export -f random
 export -f level
 export -f error
 
-#error handling?
-#escape
-# find in -mindepth 1 | sed 's/^in\///g' | while read file
-# do process "$file"
-  
-# done
-
-find in -mindepth 1 | sed 's/^in\///g;s/"/\\\"/g;s/\\/\\\\\\/g' | xargs -I {} bash -c "process \"{}\""
+find in -mindepth 1 | sed 's/^in\///g;s/"/\\\"/g;s/\\/\\\\\\/g' | \
+  xargs -I {} bash -c "process \"{}\""
 
 #check file count
