@@ -29,6 +29,16 @@ error () {
   exit 1
 }
 
+while getopts "g:" OPTION
+do
+  case $OPTION in
+    g) gamma=$OPTARG ;;
+    \?) error "usage error" ;;
+  esac
+done
+
+echo ${!OPTIND}
+
 if [ -f background.png ]
 then
   background=background.png
@@ -43,6 +53,7 @@ read backgroundWidth backgroundHeight <<<$(getImageDimensions "$background")
 echo $backgroundWidth
 echo $backgroundHeight
 
+#error handling?
 find in -mindepth 1 | while read file; do process "$file"; done
 
 echo $(random 10)
