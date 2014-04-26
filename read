@@ -11,7 +11,7 @@ process () {
   convert \( -size "$width"x"$height" xc:black \) \
     \( "$background" \
       -chop $(random $(($dWidth + 1)))x$(random $(($dHeight + 1))) \) \
-    \( "in/$1" $(level) \) -composite test.png
+    \( "in/$1" $(level) \) -composite "out/$1"
 }
 
 getImageDimensions () {
