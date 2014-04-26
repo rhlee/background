@@ -11,7 +11,7 @@ process () {
   convert \( -size "$width"x"$height" xc:black \) \
     \( "$background" \
       -chop $(random $(($dWidth + 1)))x$(random $(($dHeight + 1))) \) \
-    \( "in/$1" $(level) \) -composite "out/$1"
+    \( "in/$1" $(level) \) -composite "out/$(echo $1 | sed 's/\///g')"
 }
 
 getImageDimensions () {
@@ -44,9 +44,6 @@ do
   esac
 done
 
-echo ${!OPTIND}
-echo $(level)
-
 if [ -f background.png ]
 then
   background=background.png
@@ -62,9 +59,11 @@ then
   error "please specify input file"
 fi
 
+mkdir in out
+
+unzip -d in "${!OPTIND}"
+
 read backgroundWidth backgroundHeight <<<$(getImageDimensions "$background")
-echo $backgroundWidth
-echo $backgroundHeight
 
 export background
 export backgroundWidth
@@ -77,10 +76,12 @@ export -f random
 export -f level
 export -f error
 
-find in -mindepth 1 | sed 's/^in\///g;s/"/\\\"/g;s/\\/\\\\\\/g' | \
+find in -type f | sed 's/^in\///g;s/"/\\\"/g;s/\\/\\\\\\/g' | \
   xargs -I {} bash -c "process \"{}\""
 
 if [ $(find in -type f | wc -l) -ne $(find out -type f | wc -l) ]
 then
   error "number of ouput files does not match input files"
 fi
+
+rm -rf in out
