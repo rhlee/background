@@ -1,7 +1,7 @@
 #!/bin/sh
 
 process () {
-  read width height <<<$(getImageDimensions "$1")
+  read width height <<<$(getImageDimensions "in/$1")
   dWidth=$(($backgroundWidth - $width))
   dHeight=$(($backgroundHeight - $height))
   if [ "$dWidth" -lt 0 ] || [ "$dWidth" -lt 0 ]
@@ -11,7 +11,7 @@ process () {
   convert \( -size "$width"x"$height" xc:black \) \
     \( "$background" \
       -chop $(random $(($dWidth + 1)))x$(random $(($dHeight + 1))) \) \
-    \( "$1" $(level) \) -composite test.png
+    \( "in/$1" $(level) \) -composite test.png
 }
 
 getImageDimensions () {
@@ -62,4 +62,10 @@ echo $backgroundWidth
 echo $backgroundHeight
 
 #error handling?
-find in -mindepth 1 | while read file; do process "$file"; done
+ls in | while read file
+do process "$file"
+  
+done
+
+
+#check file count
