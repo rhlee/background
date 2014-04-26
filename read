@@ -24,6 +24,13 @@ random () {
     $(dd if=/dev/urandom count=1 2> /dev/null | cksum | cut -f1 -d" ") % $1))
 }
 
+level () {
+  if [[ -n "$gamma" ]]
+  then
+    echo "-level 0%,100%,$gamma"
+  fi
+}
+
 error () {
   echo "error: $1" 1>&2
   exit 1
@@ -38,6 +45,7 @@ do
 done
 
 echo ${!OPTIND}
+echo $(level)
 
 if [ -f background.png ]
 then
