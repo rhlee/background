@@ -32,7 +32,7 @@ random () {
 }
 
 level () {
-  if [[ -n "$gamma" ]]
+  if [ -n "$gamma" ]
   then
     echo "-level 0%,100%,$gamma"
   fi
@@ -102,7 +102,6 @@ cd ..
 
 rm -rf in out
 #count zip
-#detect colors
-#combine info
 #bracks
 #abort
+#rm old zip - all in
