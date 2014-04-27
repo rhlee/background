@@ -38,6 +38,11 @@ level () {
   fi
 }
 
+countFilesInZip () {
+  unzip -l "$1" | tail -n 1 | \
+    sed -En 's/^ *[0-9]+ +([0-9]+) files/\1/p'
+}
+
 error () {
   echo "error: $1" 1>&2
   exit 255
@@ -86,22 +91,23 @@ export -f random
 export -f level
 export -f error
 
+outputFile=$(basename "$(echo "$1" | sed 's/\(.*\)\.\(.*\)/\1/')"_converted.zip)
+
 find in -type f | sed 's/^in\///g;s/"/\\\"/g;s/\\/\\\\\\/g' | \
+  tail -n 5 | \
   xargs \
     -P $(cat /proc/cpuinfo | grep '^processor	' | wc -l) \
     -I {} bash -c "process \"{}\""
 
-if [ $(find in -type f | wc -l) -ne $(find out -type f | wc -l) ]
+cd out
+zip -r "../$outputFile" .
+cd ..
+
+if [ $(countFilesInZip "$inputFile") -ne $(countFilesInZip "$outputFile") ]
 then
   error "number of ouput files does not match input files"
 fi
 
-cd out
-zip -r "../$(basename "$(echo $inputFile | sed 's/\(.*\)\.\(.*\)/\1/')")_converted.zip" . 
-cd ..
-
 rm -rf in out
-#count zip
-#bracks
-#abort
-#rm old zip - all in
+#remove old zip
+# remove zip + temp on error
