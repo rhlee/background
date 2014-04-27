@@ -91,10 +91,9 @@ export -f random
 export -f level
 export -f error
 
-outputFile=$(basename "$(echo "$1" | sed 's/\(.*\)\.\(.*\)/\1/')"_converted.zip)
+outputFile=$(basename "$(echo "$inputFile" | sed 's/\(.*\)\.\(.*\)/\1/')"_converted.zip)
 
 find in -type f | sed 's/^in\///g;s/"/\\\"/g;s/\\/\\\\\\/g' | \
-  tail -n 5 | \
   xargs \
     -P $(cat /proc/cpuinfo | grep '^processor	' | wc -l) \
     -I {} bash -c "process \"{}\""
@@ -109,5 +108,7 @@ then
 fi
 
 rm -rf in out
+#remove on top
 #remove old zip
 # remove zip + temp on error
+#1st: match file count with dir
