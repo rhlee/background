@@ -1,22 +1,29 @@
 #!/bin/bash
 
 process () {
-  read width height <<<$(getImageDimensions "in/$1")
-  dWidth=$(($backgroundWidth - $width))
-  dHeight=$(($backgroundHeight - $height))
-  if [ "$dWidth" -lt 0 ] || [ "$dHeight" -lt 0 ]
+  read width height saturation <<< \
+    $(convert "in/$1" -colorspace HSL -format '%w %h %[fx:mean.g]' info:)
+
+  if [ "${saturation#*"e"}" != "$saturation" ] || \
+    [ $(echo "$saturation < 0.25" | bc) -ne 0 ]
   then
-    error "background file too small"
+    cp "in/$1" "out/$(rename "$1")"
+  else
+    dWidth=$(($backgroundWidth - $width))
+    dHeight=$(($backgroundHeight - $height))
+    if [ "$dWidth" -lt 0 ] || [ "$dHeight" -lt 0 ]
+    then
+      error "background file too small"
+    fi
+    convert \( -size "$width"x"$height" xc:black \) \
+      \( "$background" \
+        -chop $(random $(($dWidth + 1)))x$(random $(($dHeight + 1))) \) \
+      \( "in/$1" $(level) \) -composite "out/$(rename "$1")"
   fi
-  convert \( -size "$width"x"$height" xc:black \) \
-    \( "$background" \
-      -chop $(random $(($dWidth + 1)))x$(random $(($dHeight + 1))) \) \
-    \( "in/$1" $(level) \) -composite "out/$(echo $1 | sed 's/\///g')"
 }
 
-getImageDimensions () {
-  echo $(identify -verbose "$1" | \
-    sed -En 's/^  Geometry: ([0-9]+)x([0-9]+)\+0\+0$/\1 \2/p')
+rename () {
+  echo $1 | sed 's/\///g'
 }
 
 random () {
@@ -65,7 +72,8 @@ mkdir in out
 
 unzip -d in "$inputFile"
 
-read backgroundWidth backgroundHeight <<<$(getImageDimensions "$background")
+read backgroundWidth backgroundHeight <<< \
+  $(convert "$background" -colorspace HSL -format '%w %h' info:)
 
 export background
 export backgroundWidth
@@ -73,7 +81,7 @@ export backgroundHeight
 export gamma
 
 export -f process
-export -f getImageDimensions
+export -f rename
 export -f random
 export -f level
 export -f error
@@ -95,3 +103,6 @@ cd ..
 rm -rf in out
 #count zip
 #detect colors
+#combine info
+#bracks
+#abort
