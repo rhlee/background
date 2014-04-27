@@ -7,8 +7,6 @@ process () {
   if [ "${saturation#*"e"}" != "$saturation" ] || \
     [ $(echo "$saturation < 0.25" | bc) -ne 0 ]
   then
-    cp "in/$1" "out/$(rename "$1")"
-  else
     dWidth=$(($backgroundWidth - $width))
     dHeight=$(($backgroundHeight - $height))
     if [ "$dWidth" -lt 0 ] || [ "$dHeight" -lt 0 ]
@@ -19,6 +17,8 @@ process () {
       \( "$background" \
         -chop $(random $(($dWidth + 1)))x$(random $(($dHeight + 1))) \) \
       \( "in/$1" $(level) \) -composite "out/$(rename "$1")"
+  else
+    cp "in/$1" "out/$(rename "$1")"
   fi
 }
 
