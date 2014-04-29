@@ -4,8 +4,7 @@ process () {
   read width height saturation <<< \
     $(convert "in/$1" -colorspace HSL -format '%w %h %[fx:mean.g]' info:)
 
-  if [ "${saturation#*"e"}" != "$saturation" ] || \
-    [ $(echo "$saturation < 0.25" | bc) -ne 0 ]
+  if true #tidy
   then
     dWidth=$(($backgroundWidth - $width))
     dHeight=$(($backgroundHeight - $height))
@@ -13,10 +12,10 @@ process () {
     then
       error "background file too small"
     fi
-    convert \( -size "$width"x"$height" xc:black \) \
+    convert \
       \( "$background" \
-        -chop $(random $(($dWidth + 1)))x$(random $(($dHeight + 1))) \) \
-      \( "in/$1" $(level) \) -composite "out/$(rename "$1")"
+        -crop ${width}x${height}+$(random $(($dWidth + 1)))+$(random $(($dHeight + 1))) \) \
+      \( "in/$1" $(level) \) -fx "u[0] + u[1] - 1" "out/$(rename "$1")"
   else
     cp "in/$1" "out/$(rename "$1")"
   fi
@@ -95,7 +94,6 @@ outputFile=$(basename "$(echo "$inputFile" | sed 's/\(.*\)\.\(.*\)/\1/')"_conver
 
 find in -type f | sed 's/^in\///g;s/"/\\\"/g;s/\\/\\\\\\/g' | \
   xargs \
-    -P $(cat /proc/cpuinfo | grep '^processor	' | wc -l) \
     -I {} bash -c "process \"{}\""
 
 cd out
@@ -112,3 +110,4 @@ rm -rf in out
 #remove old zip
 # remove zip + temp on error
 #1st: match file count with dir
+#put back wxh
