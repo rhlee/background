@@ -4,21 +4,16 @@ process () {
   read width height saturation <<< \
     $(convert "in/$1" -colorspace HSL -format '%w %h %[fx:mean.g]' info:)
 
-  if true #tidy
+  dWidth=$(($backgroundWidth - $width))
+  dHeight=$(($backgroundHeight - $height))
+  if [ "$dWidth" -lt 0 ] || [ "$dHeight" -lt 0 ]
   then
-    dWidth=$(($backgroundWidth - $width))
-    dHeight=$(($backgroundHeight - $height))
-    if [ "$dWidth" -lt 0 ] || [ "$dHeight" -lt 0 ]
-    then
-      error "background file too small"
-    fi
-    convert \
-      \( "$background" \
-        -crop ${width}x${height}+$(random $(($dWidth + 1)))+$(random $(($dHeight + 1))) \) \
-      \( "in/$1" $(level) \) -fx "u[0] + u[1] - 1" "out/$(rename "$1")"
-  else
-    cp "in/$1" "out/$(rename "$1")"
+    error "background file too small"
   fi
+  convert \
+    \( "$background" -crop \
+${width}x${height}+$(random $(($dWidth + 1)))+$(random $(($dHeight + 1))) \) \
+    \( "in/$1" $(level) \) -fx "u[0] + u[1] - 1" "out/$(rename "$1")"
 }
 
 rename () {
