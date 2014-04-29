@@ -74,22 +74,11 @@ unzip -d in "$inputFile"
 read backgroundWidth backgroundHeight <<< \
   $(convert "$background" -colorspace HSL -format '%w %h' info:)
 
-export background
-export backgroundWidth
-export backgroundHeight
-export gamma
-
-export -f process
-export -f rename
-export -f random
-export -f level
-export -f error
-
 outputFile=$(basename "$(echo "$inputFile" | sed 's/\(.*\)\.\(.*\)/\1/')"_converted.zip)
 
-find in -type f | sed 's/^in\///g;s/"/\\\"/g;s/\\/\\\\\\/g' | \
-  xargs \
-    -I {} bash -c "process \"{}\""
+find in -type f | sed 's/^in\///' | while read line
+  do process "$line"
+done
 
 cd out
 zip -r "../$outputFile" .
