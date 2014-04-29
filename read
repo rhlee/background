@@ -2,9 +2,9 @@
 
 process () {
   read width height <<< $(getImageSize "in/$1")
-
   dWidth=$(($backgroundWidth - $width))
   dHeight=$(($backgroundHeight - $height))
+  
   if [ "$dWidth" -lt 0 ] || [ "$dHeight" -lt 0 ]
   then
     error "background file too small"
@@ -69,14 +69,15 @@ then
   error "please specify input file"
 fi
 
-rm -rf in out
+outputFile=$(basename "$(echo "$inputFile" | \
+  sed 's/\(.*\)\.\(.*\)/\1/')"_converted.zip)
+
+rm -rf in out "$outputFile"
 mkdir in out
 
 unzip -d in "$inputFile"
 
 read backgroundWidth backgroundHeight <<< $(getImageSize $background)
-
-outputFile=$(basename "$(echo "$inputFile" | sed 's/\(.*\)\.\(.*\)/\1/')"_converted.zip)
 
 find in -type f | sed 's/^in\///' | while read line
   do process "$line"
@@ -92,6 +93,6 @@ then
 fi
 
 rm -rf in out
-#remove old zip
 # remove zip + temp on error
+# put in clean function
 #1st: match file count with dir
