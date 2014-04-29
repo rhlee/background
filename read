@@ -42,7 +42,10 @@ countFilesInZip () {
 
 error () {
   echo "error: $1" 1>&2
-  exit 255
+}
+
+clean () {
+  rm -rf in out "$outputFile"
 }
 
 while getopts "g:" OPTION
@@ -72,7 +75,8 @@ fi
 outputFile=$(basename "$(echo "$inputFile" | \
   sed 's/\(.*\)\.\(.*\)/\1/')"_converted.zip)
 
-rm -rf in out "$outputFile"
+clean
+
 mkdir in out
 
 unzip -d in "$inputFile"
@@ -93,6 +97,5 @@ then
 fi
 
 rm -rf in out
-# remove zip + temp on error
-# put in clean function
+# detect process failure
 #1st: match file count with dir
