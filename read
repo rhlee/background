@@ -10,9 +10,9 @@ process () {
     error "background file too small"
   fi
   convert \
-    \( "$background" -crop \
+    \( whitened_background.png -crop \
 ${width}x${height}+$(random $(($dWidth + 1)))+$(random $(($dHeight + 1))) \) \
-    \( "in/$1" $(level) \) -fx "u[0] + u[1] - 1" "out/$(rename "$1")"
+    \( "in/$1" $(level) \) -fx "u*v" "out/$(rename "$1")"
 }
 
 rename () {
@@ -48,10 +48,11 @@ clean () {
   rm -rf in out "$outputFile"
 }
 
-while getopts "g:" OPTION
+while getopts "g:w:" OPTION
 do
   case $OPTION in
     g) gamma=$OPTARG ;;
+    w) whiten=$OPTARG ;;
     \?) error "usage error" ;;
   esac
 done
@@ -83,6 +84,8 @@ unzip -d in "$inputFile"
 
 read backgroundWidth backgroundHeight <<< $(getImageSize $background)
 
+composite -blend $whiten \( -size ${backgroundWidth}x${backgroundHeight} xc:white \) background.png whitened_background.png
+
 find in -type f | sed 's/^in\///' | while read line
   do process "$line"
 done
@@ -99,3 +102,4 @@ fi
 rm -rf in out
 # detect process failure
 #1st: match file count with dir
+#remove gamma
