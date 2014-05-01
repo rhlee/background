@@ -12,7 +12,7 @@ process () {
   convert \
     \( whitened_background.png -crop \
 ${width}x${height}+$(random $(($dWidth + 1)))+$(random $(($dHeight + 1))) \) \
-    \( "in/$1" $(level) \) -fx "u*v" "out/$(rename "$1")"
+    "in/$1" -fx "u*v" "out/$(rename "$1")"
 }
 
 rename () {
@@ -22,13 +22,6 @@ rename () {
 random () {
   echo $(( \
     $(dd if=/dev/urandom count=1 2> /dev/null | cksum | cut -f1 -d" ") % $1))
-}
-
-level () {
-  if [ -n "$gamma" ]
-  then
-    echo "-level 0%,100%,$gamma"
-  fi
 }
 
 getImageSize () {
