@@ -28,11 +28,6 @@ getImageSize () {
   convert "$1" -format '%w %h' info:
 }
 
-countFilesInZip () {
-  unzip -l "$1" | tail -n 1 | \
-    sed -En 's/^ *[0-9]+ +([0-9]+) files/\1/p'
-}
-
 error () {
   echo "error: $1" 1>&2
   clean
@@ -43,17 +38,16 @@ clean () {
   rm -rf in out "$outputFile"
 }
 
-mytrap () {
+stop () {
   error "aborted"
   exit 2
 }
 
-trap mytrap SIGINT
+trap stop SIGINT
 
 while getopts "g:w:" OPTION
 do
   case $OPTION in
-    g) gamma=$OPTARG ;;
     w) whiten=$OPTARG ;;
     \?) error "usage error" ;;
   esac
@@ -98,12 +92,11 @@ cd out
 zip -r "../$outputFile" .
 cd ..
 
-if [ $(find in -type f | wc -l) -ne \
-  $(unzip -l "$outputFile" | tail -n 1 | sed -En 's/^ *[0-9]+ +([0-9]+) files/\1/p') ]
+if [ $(find in -type f | wc -l) -ne $(unzip -l "$outputFile" | \
+  tail -n 1 | sed -En 's/^ *[0-9]+ +([0-9]+) files/\1/p') ]
 then
   error "number of ouput files does not match input files"
 fi
 
 rm -rf in out
-#1st: match file count with dir
 #change file name
