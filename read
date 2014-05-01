@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 process () {
   read width height <<< $(getImageSize "in/$1")
