@@ -35,7 +35,7 @@ error () {
 }
 
 clean () {
-  rm -rf in out "$outputFile"
+  rm -rf in out whitened_background.png "$outputFile"
 }
 
 stop () {
@@ -45,7 +45,9 @@ stop () {
 
 trap stop SIGINT
 
-while getopts "g:w:" OPTION
+whiten=0
+
+while getopts "w:" OPTION
 do
   case $OPTION in
     w) whiten=$OPTARG ;;
@@ -98,4 +100,4 @@ then
   error "number of ouput files does not match input files"
 fi
 
-rm -rf in out
+rm -rf in out whitened_background.png
