@@ -42,11 +42,20 @@ countFilesInZip () {
 
 error () {
   echo "error: $1" 1>&2
+  clean
+  exit 1
 }
 
 clean () {
   rm -rf in out "$outputFile"
 }
+
+mytrap () {
+  clean
+  exit 2
+}
+
+trap mytrap SIGINT
 
 while getopts "g:w:" OPTION
 do
@@ -102,6 +111,6 @@ then
 fi
 
 rm -rf in out
-# detect process failure
 #1st: match file count with dir
 #remove gamma
+#change file name
