@@ -84,7 +84,9 @@ unzip -d in "$inputFile"
 
 read backgroundWidth backgroundHeight <<< $(getImageSize $background)
 
-composite -blend $whiten \( -size ${backgroundWidth}x${backgroundHeight} xc:white \) background.png whitened_background.png
+composite -blend $whiten \
+  \( -size ${backgroundWidth}x${backgroundHeight} xc:white \) \
+  background.png whitened_background.png
 
 find in -type f | sed 's/^in\///' | while read line
   do process "$line"
