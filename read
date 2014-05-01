@@ -44,7 +44,7 @@ clean () {
 }
 
 mytrap () {
-  clean
+  error "aborted"
   exit 2
 }
 
@@ -105,5 +105,4 @@ fi
 
 rm -rf in out
 #1st: match file count with dir
-#remove gamma
 #change file name
