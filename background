@@ -87,8 +87,13 @@ composite -blend $whiten \
   background.png whitened_background.png
 
 find in -type f | sed 's/^in\///' | while read line
-  do process "$line"
+do
+  process "$line"
 done
+if [ $? -ne 0 ]
+then
+  error "process error"
+fi
 
 cd out
 zip -r "../$outputFile" .
